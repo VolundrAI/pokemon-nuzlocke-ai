@@ -5,13 +5,16 @@ import asyncio
 
 from poke_env.player_configuration import PlayerConfiguration
 from poke_env.server_configuration import ServerConfiguration
-from poke_env.player.random_player import RandomPlayer
+
 from poke_env.player.player import Player
-from poke_env.player.utils import cross_evaluate
-from poke_env.player_configuration import PlayerConfiguration
 from poke_env.player.random_player import RandomPlayer
-from poke_env.teambuilder.teambuilder_pokemon import TeambuilderPokemon
+from trainerai import GameAIPlayer
+
+from poke_env.player.utils import cross_evaluate
+
 from poke_env.teambuilder.teambuilder import Teambuilder
+from poke_env.teambuilder.teambuilder_pokemon import TeambuilderPokemon
+
 
 server_config= ServerConfiguration(
     "localhost:8192",
@@ -83,7 +86,7 @@ async def main(run_df, battle_df, encounter_df, item_df):
     teams = build_teams(battle_df)
 
     players = [
-        RandomPlayer(server_configuration=server_config, max_concurrent_battles=20, team=team, battle_format="gen7anythinggoes")
+        GameAIPlayer(server_configuration=server_config, max_concurrent_battles=20, team=team, battle_format="gen8anythinggoes")
         for team in teams
     ]
 

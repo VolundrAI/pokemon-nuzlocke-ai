@@ -44,7 +44,7 @@ def calculate_move_score(
     ##TODO
 
     ##Adjust score based on damage of move
-    
+
     score = score_calculated_damage(
         score,
         move,
@@ -61,6 +61,11 @@ def calculate_move_score(
 
 
 class GameAIPlayer(Player): #Single Battler
+
+    def teampreview(self, battle):
+
+        return "/team " + "123456"
+
     def choose_move(self, battle):
         #Some initial hardcoded loading
         moveeffect_map = load_moveeffect_map("X:/VolundrAI/pokemon-nuzlocke-ai/data/knownmoves.txt")

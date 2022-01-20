@@ -1870,13 +1870,243 @@ def moveeffect_051(score: int, move: Move, user: Pokemon, target: Pokemon) -> in
     avg = 0
 
     for stat in ["atk", "def", "spa", "spd", "spe", "evasion", "accuracy"]:
-        avg += target.boosts.get(stat)
-        avg -= user.boosts.get(stat)
+        avg += target.boosts.get(stat, 0)
+        avg -= user.boosts.get(stat, 0)
 
     score += avg*10
 
     return score
 moveeffect_dict["051"] = moveeffect_051
+
+def moveeffect_052(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: User and target swap their Attack and Special Attack stat stages. (Power Swap)
+    """
+    aatk = user.boosts.get("atk", 0)
+    aspa = user.boosts.get("spa", 0)
+
+    oatk = target.boosts.get("atk", 0)
+    ospa = target.boosts.get("spa", 0)
+
+    if aatk >= oatk and aspa >= ospa:
+        score -= 80
+    else:
+        score += (oatk - aatk)*10
+        score += (ospa - aspa)*10
+
+    return score
+moveeffect_dict["052"] = moveeffect_052
+
+def moveeffect_053(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: User and target swap their Defense and Special Defense stat stages. (Guard Swap)
+    """
+    adef = user.boosts.get("def", 0)
+    aspd = user.boosts.get("spd", 0)
+
+    odef = target.boosts.get("def", 0)
+    ospd = target.boosts.get("spd", 0)
+
+    if adef >= odef and aspd >= ospd:
+        score -= 80
+    else:
+        score += (odef - adef)*10
+        score += (ospd - aspd)*10
+
+    return score
+moveeffect_dict["053"] = moveeffect_053
+
+def moveeffect_054(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: User and target swap all their stat stages. (Heart Swap)
+    """
+
+    us = 0
+    them = 0
+    for stat in ["atk", "def", "spa", "spd", "spe", "evasion", "accuracy"]:
+        them += target.boosts.get(stat, 0)
+        us += user.boosts.get(stat, 0)
+    score += (them - user)*10
+
+    return score
+moveeffect_dict["054"] = moveeffect_054
+
+def moveeffect_055(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: User copies the target's stat stages. (Psych Up)
+    """
+
+    equal = True
+
+    for stat in ["atk", "def", "spa", "spd", "spe", "evasion", "accuracy"]:
+        diff = target.boosts.get(stat, 0) - user.boosts.get(stat, 0)
+        score += diff*10
+
+        if diff != 0:
+            equal = False
+
+    if equal:
+        score -= 80
+
+    return score
+moveeffect_dict["055"] = moveeffect_055
+
+def moveeffect_056(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: For 5 rounds, user's and ally's stat stages cannot be lowered by foes. (Mist)
+    """
+
+    if user.effects.get(Effect.MIST, None) is not None:
+        score -= 80
+
+    return score
+moveeffect_dict["056"] = moveeffect_056
+
+def moveeffect_057(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: Swaps the user's Attack and Defense stats. (Power Trick)
+    """
+
+    aatk = user.stats.get("atk", 0)
+    adef = user.stats.get("def", 0)
+
+    if aatk == adef or user.effects.get(Effect.POWER_TRICK, None) is not None:
+        score -= 90
+    elif adef > aatk:
+        score += 30
+    else:
+        score -= 30
+
+    return score
+moveeffect_dict["057"] = moveeffect_057
+
+def moveeffect_058(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: Averages the user's and target's Attack/Special Attack.
+    """
+
+    aatk = user.base_stats.get("atk", 0)
+    aspa = user.base_stats.get("spa", 0)
+
+    oatk = target.base_stats.get("atk", 0)
+    ospa = target.base_stats.get("spa", 0)
+
+    if aatk<oatk and aspa<ospa:
+        score += 50
+    elif aatk+aspatk<ospa+oatk:
+        score += 30
+    else:
+        score -= 50
+
+    return score
+moveeffect_dict["058"] = moveeffect_058
+
+def moveeffect_059(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: Averages the user's and target's Defense/Special Defense.
+    """
+
+    adef = user.base_stats.get("def", 0)
+    aspd = user.base_stats.get("spd", 0)
+
+    odef = target.base_stats.get("def", 0)
+    ospd = target.base_stats.get("spd", 0)
+
+    if adef<odef and aspd<ospd:
+        score += 50
+    elif adef+aspd<odef+ospd:
+        score += 30
+    else:
+        score -= 50
+
+    return score
+moveeffect_dict["059"] = moveeffect_059
+
+def moveeffect_05A(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: Averages the user's and target's current HP. (Pain Split)
+    """
+
+    if target.effects.get(Effect.SUBSTITUTE, None) is not None:
+        score -= 90
+    elif user.current_hp_fraction > (user.current_hp_fraction+target.current_hp_fraction)/2:
+        score -= 90
+    else:
+        score += 40
+
+    return score
+moveeffect_dict["05A"] = moveeffect_05A
+
+def moveeffect_05B(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Move Effect Name: For 4 rounds, doubles the Speed of all battlers on the user's side. (Tailwind)
+
+    TODO: Add a way of checking battle condition for tailwind!
+    """
+
+    #TODO: Check for tailwind
+
+    return score
+moveeffect_dict["05B"] = moveeffect_05B
+
+def moveeffect_05C(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    This move turns into the last move used by the target, until user switches out. (Mimic)
+
+    #TODO: Check for pokemon's last move
+    """
+
+
+    #TODO: Check for last move
+
+    return score
+moveeffect_dict["05C"] = moveeffect_05C
+
+def moveeffect_05D(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    This move permanently turns into the last move used by the target. (Sketch)
+
+    #TODO: Check for pokemon's last move
+    """
+
+
+    #TODO: Check for last move
+
+    return score
+moveeffect_dict["05D"] = moveeffect_05D
+
+def moveeffect_05E(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Changes user's type to that of a random user's move, except a type the user
+    already has (even partially), OR changes to the user's first move's type.
+    (Conversion)
+    """
+
+    has_possible = False
+
+    for _, move in user.moves.items():
+        if move.type in user.types:
+            continue
+
+    if not has_possible:
+        score -= 90
+
+    return score
+moveeffect_dict["05E"] = moveeffect_05E
+
+def moveeffect_05F(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
+    """
+    Changes user's type to a random one that resists/is immune to the last move
+    used by the target. (Conversion 2)
+
+    #TODO: Check for pokemon's last move
+    """
+
+
+    #TODO: Check for last move
+
+    return score
+moveeffect_dict["05F"] = moveeffect_05F
 
 def moveeffect_0BE(score: int, move: Move, user: Pokemon, target: Pokemon) -> int:
     """
